@@ -1,6 +1,7 @@
 package net.xmeter.samplers.mqtt.fuse;
 
 import java.net.URISyntaxException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -10,6 +11,9 @@ import org.fusesource.mqtt.client.Callback;
 import org.fusesource.mqtt.client.CallbackConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.Tracer;
+import org.fusesource.mqtt.codec.MQTTFrame;
+import org.fusesource.mqtt.codec.PUBCOMP;
+import org.fusesource.mqtt.codec.PUBREC;
 
 import net.xmeter.samplers.mqtt.ConnectionParameters;
 import net.xmeter.samplers.mqtt.MQTTClient;
@@ -21,6 +25,10 @@ class FuseMQTTClient implements MQTTClient {
 
     private final ConnectionParameters parameters;
     private final MQTT mqtt = new MQTT();
+    
+    private static ConcurrentHashMap<Short, Long> elapsedMap = new ConcurrentHashMap<>();
+    private static float avg = 0;
+    private static long count = 0;
 
     FuseMQTTClient(ConnectionParameters parameters) throws URISyntaxException {
         if (!FuseUtil.ALLOWED_PROTOCOLS.contains(parameters.getProtocol())) {
@@ -40,11 +48,32 @@ class FuseMQTTClient implements MQTTClient {
         mqtt.setVersion(parameters.getVersion());
         mqtt.setConnectAttemptsMax(parameters.getConnectMaxAttempts());
         mqtt.setReconnectAttemptsMax(parameters.getReconnectMaxAttempts());
+        mqtt.setReceiveBufferSize(1024*4);
+        mqtt.setSendBufferSize(1024*4);
 
         mqtt.setTracer(new Tracer() {
             @Override
-            public void debug(String message, Object...args) {
-                logger.info(() -> "MQTT Tracer - " + mqtt + "[" + parameters.getUsername() + "]: " + String.format(message, args));
+            public void onSend(MQTTFrame frame) {
+            		try {
+            			if (frame.messageType() == PUBREC.TYPE ) {
+                			PUBREC ack = new PUBREC().decode(frame);
+                			elapsedMap.put(ack.messageId(), System.currentTimeMillis());
+                		} else if (frame.messageType() == PUBCOMP.TYPE) {
+                			PUBCOMP ack = new PUBCOMP().decode(frame);
+                			if (elapsedMap.get(ack.messageId()) != null) {
+                				long elapsed = System.currentTimeMillis() - elapsedMap.get(ack.messageId());
+                				count++;
+                				avg = avg + ((float)elapsed - avg)/(float)count;
+                				if (count % 100 == 0) {
+                					logger.fine(() -> "avg elapsed=" + avg);
+                				}
+                				elapsedMap.remove(ack.messageId());
+                			}
+                		}
+            		} catch (Exception e) {
+            			
+            		}
+            		
             }
         });
     }
