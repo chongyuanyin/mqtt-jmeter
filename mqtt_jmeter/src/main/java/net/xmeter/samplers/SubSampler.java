@@ -262,7 +262,7 @@ public class SubSampler extends AbstractMQTTSampler {
 		}
 		
 		if((!sampleByTime) && (bean.getReceivedCount() == sampleCount)) { //Create a new batch when latest bean is full.
-			logger.info("The tail bean is full, will create a new bean for it.");
+			logger.fine("The tail bean is full, will create a new bean for it.");
 			bean = new SubBean();
 			batches.add(bean);
 		}
