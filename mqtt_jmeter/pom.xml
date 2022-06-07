@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.xmeter</groupId>
     <artifactId>mqtt-jmeter</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 
     <properties>
         <jmeter-version>5.0</jmeter-version>
@@ -30,6 +30,18 @@
             <version>1.14</version>
         </dependency>
 
+		<!-- <dependency>
+      <groupId>org.fusesource.hawtdispatch</groupId>
+      <artifactId>hawtdispatch-transport</artifactId>
+      <version>1.22</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fusesource.hawtbuf</groupId>
+      <artifactId>hawtbuf</artifactId>
+      <version>1.11</version>
+    </dependency>-->
+
         <dependency>
             <groupId>com.hivemq</groupId>
             <artifactId>hivemq-mqtt-client</artifactId>
@@ -39,7 +51,7 @@
     </dependencies>
 
     <build>
-        <finalName>mqtt-xmeter-${project.version}</finalName>
+        <finalName>mqtt-xmeter-fuse-${project.version}</finalName>
         <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
