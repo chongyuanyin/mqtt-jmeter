@@ -28,17 +28,19 @@ class HiveMQTTConnection implements MQTTConnection {
     private static final Logger logger = Logger.getLogger(HiveMQTTConnection.class.getCanonicalName());
 
     private static final Charset charset = Charset.forName("UTF-8");
-    private static final CharsetDecoder decoder = charset.newDecoder();
+//    private static final CharsetDecoder decoder = charset.newDecoder();
 
     private final Mqtt3BlockingClient client;
     private final String clientId;
     private final Mqtt3ConnAck connAck;
     private MQTTSubListener listener;
+    private CharsetDecoder decoder;
 
     HiveMQTTConnection(Mqtt3BlockingClient client, String clientId, Mqtt3ConnAck connAck) {
         this.client = client;
         this.clientId = clientId;
         this.connAck = connAck;
+        this.decoder = charset.newDecoder();
     }
 
     @Override
