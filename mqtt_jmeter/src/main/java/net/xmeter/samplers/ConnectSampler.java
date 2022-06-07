@@ -75,6 +75,8 @@ public class ConnectSampler extends AbstractMQTTSampler {
 				MQTTSsl ssl = MQTT.getInstance(getMqttClientName()).createSsl(this);
 				parameters.setSsl(ssl);
 			}
+			parameters.setSendBuff(getSendBuff());
+			parameters.setRcvBuff(getRecvBuff());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to establish Connection " + connection , e);
 			result.setSuccessful(false);

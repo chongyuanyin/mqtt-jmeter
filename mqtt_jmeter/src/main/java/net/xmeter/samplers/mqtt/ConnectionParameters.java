@@ -17,6 +17,8 @@ public class ConnectionParameters {
     private String password;
     private boolean cleanSession;
     private String path;
+    private int sendBuff;
+    private int rcvBuff;
 
     public MQTTSsl getSsl() {
         return ssl;
@@ -138,4 +140,20 @@ public class ConnectionParameters {
     public boolean isWebSocketProtocol() {
         return Util.isWebSocketProtocol(getProtocol());
     }
+
+	public int getSendBuff() {
+		return sendBuff;
+	}
+
+	public void setSendBuff(int sendBuff) {
+		this.sendBuff = sendBuff;
+	}
+
+	public int getRcvBuff() {
+		return rcvBuff;
+	}
+
+	public void setRcvBuff(int rcvBuff) {
+		this.rcvBuff = rcvBuff;
+	}
 }

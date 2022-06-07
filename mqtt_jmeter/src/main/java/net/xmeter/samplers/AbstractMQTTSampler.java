@@ -200,6 +200,22 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 	public void setMqttClientName(String mqttClientName) {
 		setProperty(MQTT_CLIENT_NAME, mqttClientName);
 	}
+	
+	public int getSendBuff() {
+		return getPropertyAsInt(SEND_BUFF, 64);
+	}
+
+	public void setSendBuff(int buf) {
+		setProperty(SEND_BUFF, buf);
+	}
+	
+	public int getRecvBuff() {
+		return getPropertyAsInt(RECV_BUFF, 64);
+	}
+
+	public void setRecvBuff(int buf) {
+		setProperty(RECV_BUFF, buf);
+	}
 
 //	public int getConCapacity() {
 //		return conCapacity;
