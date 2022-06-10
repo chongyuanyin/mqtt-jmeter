@@ -1,7 +1,6 @@
 package net.xmeter.samplers;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -211,7 +210,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 				paraTopics[i] = topic;
 			}
 		}
-		System.out.println("topics: " + Arrays.toString(paraTopics));
+//		System.out.println("topics: " + Arrays.toString(paraTopics));
 
 		if(qos < 0 || qos > 2) {
 			logger.severe("Specified invalid QoS value, set to default QoS value " + qos);
