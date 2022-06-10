@@ -26,6 +26,7 @@ public class EfficientConnectSamplerUI extends AbstractSamplerGui implements Con
 	private JLabeledTextField connCapacity  = new JLabeledTextField("Connection capacity:");;
 	private JLabeledChoice qosChoice;
 	private final JLabeledTextField topicNames = new JLabeledTextField("Topic name(s):");
+	private final JLabeledTextField topicShareConns = new JLabeledTextField("How many connection(s) share same topic(s):");
 	
 	public EfficientConnectSamplerUI() {
 		this.init();
@@ -60,6 +61,7 @@ public class EfficientConnectSamplerUI extends AbstractSamplerGui implements Con
 		qosChoice = new JLabeledChoice("QoS Level:", new String[] { String.valueOf(QOS_0), String.valueOf(QOS_1), String.valueOf(QOS_2) }, true, false);
 		optsPanel1.add(qosChoice);
 		optsPanel1.add(topicNames);
+		optsPanel1.add(topicShareConns);
 		optsPanelCon.add(optsPanel1);
 		
 		return optsPanelCon;
@@ -89,6 +91,7 @@ public class EfficientConnectSamplerUI extends AbstractSamplerGui implements Con
 			this.qosChoice.setText(sampler.getQOS());
 		}
 		this.topicNames.setText(sampler.getTopics());
+		this.topicShareConns.setText(sampler.getTopicShareConns());
 		//
 		connCapacity.setText(sampler.getConnCapacity());
 	}
@@ -121,6 +124,7 @@ public class EfficientConnectSamplerUI extends AbstractSamplerGui implements Con
 			sampler.setQOS(this.qosChoice.getText());
 		}
 		sampler.setTopics(this.topicNames.getText());
+		sampler.setTopicShareConns(this.topicShareConns.getText());
 		sampler.setConnCapacity(this.connCapacity.getText());
 	}
 
@@ -149,6 +153,7 @@ public class EfficientConnectSamplerUI extends AbstractSamplerGui implements Con
 		
 		shouldSub.setSelected(DEFAULT_SUBSCRIBE_WHEN_CONNECTED);
 		this.topicNames.setText(DEFAULT_TOPIC_NAME);
+		this.topicShareConns.setText("0");
 		this.qosChoice.setText(String.valueOf(QOS_0));
 		
 		this.connCapacity.setText("1");

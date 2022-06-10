@@ -35,6 +35,7 @@ public interface Constants {
 	public static final String QOS_LEVEL = "mqtt.qos_level";
 	public static final String ADD_TIMESTAMP = "mqtt.add_timestamp";
 	public static final String RETAINED_MESSAGE = "mqtt.retained_message";
+	public static final String TOPIC_SHARE_CONNECTIONS = "mqtt.topic_share_connections";
 	
 	public static final String SAMPLE_CONDITION_VALUE = "mqtt.sample_condition_value";
 	public static final String SAMPLE_CONDITION = "mqtt.sample_condition";

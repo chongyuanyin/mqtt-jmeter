@@ -1,6 +1,7 @@
 package net.xmeter.samplers;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,7 +94,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 					//check if subscription needed
 					boolean suc = true;
 					if (isSubWhenConnected()) {
-						suc = handleSubscription(connection);
+						suc = handleSubscription(connection, i);
 					}
 					if (suc) {
 						subResult.setSuccessful(true);
@@ -171,9 +172,11 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 		return MQTT.getInstance(getMqttClientName()).createClient(parameters);
 	}
 	
-	private boolean handleSubscription(MQTTConnection connection) throws InterruptedException {
+	private boolean handleSubscription(MQTTConnection connection, int connIndex) throws InterruptedException {
 		final String topicsName= getTopics();
-		listenToTopics(connection, topicsName);
+		final int topicShareConns = Integer.parseInt(getTopicShareConns());
+		
+		listenToTopics(connection, topicsName, topicShareConns, connIndex);
 		synchronized (lock) {
 			if (subSucc == null) {
 				lock.wait();
@@ -186,7 +189,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 		}
 	}
 	
-	private void listenToTopics(MQTTConnection connection, final String topicsName) {
+	private void listenToTopics(MQTTConnection connection, final String topicsName, final int topicShareConns, final int connIndex) {
 	    connection.setSubListener((topic, message, ack) -> {});
 		int qos = 0;
 		try {
@@ -197,6 +200,18 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 		}
 		
 		final String[] paraTopics = topicsName.split(",");
+		if (topicShareConns > 0) {
+			int subTopic = connIndex / topicShareConns + 1;
+			for (int i=0; i<paraTopics.length; i++) {
+				String topic = paraTopics[i];
+				if (!topic.endsWith("/")) {
+					topic += "/";
+				}
+				topic += subTopic;
+				paraTopics[i] = topic;
+			}
+		}
+		System.out.println("topics: " + Arrays.toString(paraTopics));
 
 		if(qos < 0 || qos > 2) {
 			logger.severe("Specified invalid QoS value, set to default QoS value " + qos);
@@ -247,5 +262,13 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 	
 	public void setConnCapacity(String conCapacity) {
 		setProperty(CONN_CAPACITY, conCapacity);
+	}
+	
+	public String getTopicShareConns() {
+		return getPropertyAsString(TOPIC_SHARE_CONNECTIONS, "0");
+	}
+	
+	public void setTopicShareConns(String topicShareConns) {
+		setProperty(TOPIC_SHARE_CONNECTIONS, topicShareConns);
 	}
 }
