@@ -21,10 +21,13 @@ public class MQTTSubListener {
 	public MQTTSubListener(boolean sampleByTime, int sampleCount, SubSampler subSampler) {
 		this.sampleByTime = sampleByTime;
 		this.sampleCount = sampleCount;
+		this.subSampler = subSampler;
 	}
 	
     public void accept(String topic, String message, Runnable ack) {
-    	ack.run();
+    	if (ack != null) {
+    		ack.run();
+    	}
 
 		if(sampleByTime) {
 			synchronized (subSampler.getDataLock()) {

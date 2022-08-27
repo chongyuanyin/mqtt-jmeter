@@ -62,10 +62,9 @@ public class PahoMQTTConnection implements MQTTConnection {
 		}
 		
 		try {
-			client.setCallback(new PahoSubCallback());
-			client.subscribe(topicNames, qos, null);
+			client.setCallback(new PahoSubCallback(listener));
+			client.subscribe(topicNames, qos);
 			onSuccess.run();
-			client.setCallback(null);
 		} catch (MqttException ex) {
 			onFailure.accept(ex);
 		}

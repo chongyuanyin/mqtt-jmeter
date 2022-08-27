@@ -189,7 +189,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 	}
 	
 	private void listenToTopics(MQTTConnection connection, final String topicsName, final int topicShareConns, final int connIndex) {
-	    connection.setSubListener((topic, message, ack) -> {});
+//	    connection.setSubListener((topic, message, ack) -> {});
 		int qos = 0;
 		try {
 			qos = Integer.parseInt(getQOS());

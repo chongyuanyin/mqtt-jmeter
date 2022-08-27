@@ -78,6 +78,9 @@ public class SubSampler extends AbstractMQTTSampler {
 	}
 
 	public boolean isAddTimestamp() {
+		if (!DEFAULT_MQTT_CLIENT_NAME.equals(PAHO_MQTT_CLIENT_NAME)) {
+			return false;
+		}
 		return getPropertyAsBoolean(ADD_TIMESTAMP);
 	}
 
@@ -205,11 +208,16 @@ public class SubSampler extends AbstractMQTTSampler {
 		if(receivedCount == 0) {
 			result.setEndTime(result.getStartTime()); // dummy result, rectify sample time
 		} else {
-			if (isAddTimestamp()) {
-				result.setEndTime(result.getStartTime() + (long) bean.getAvgElapsedTime()); // rectify sample time
+			if (DEFAULT_MQTT_CLIENT_NAME.equals(PAHO_MQTT_CLIENT_NAME)) {
+				result.setEndTime(result.getStartTime() + (long) bean.getAvgElapsedTime());
 				result.setLatency((long) bean.getAvgElapsedTime());
 			} else {
-				result.setEndTime(result.getStartTime()); // received messages w/o timestamp, then we cannot reliably calculate elapsed time
+				if (isAddTimestamp()) {
+					result.setEndTime(result.getStartTime() + (long) bean.getAvgElapsedTime()); // rectify sample time
+					result.setLatency((long) bean.getAvgElapsedTime());
+				} else {
+					result.setEndTime(result.getStartTime()); // received messages w/o timestamp, then we cannot reliably calculate elapsed time
+				}
 			}
 		}
 		result.setSampleCount(receivedCount);

@@ -43,6 +43,9 @@ public class PubSampler extends AbstractMQTTSampler {
 	}
 
 	public boolean isAddTimestamp() {
+		if (!DEFAULT_MQTT_CLIENT_NAME.equals(PAHO_MQTT_CLIENT_NAME)) {
+			return false;
+		}
 		return getPropertyAsBoolean(ADD_TIMESTAMP);
 	}
 
