@@ -138,10 +138,11 @@ public class PubSampler extends AbstractMQTTSampler {
 			topicName = getTopic();
 			retainedMsg = getRetainedMessage();
 			if (isAddTimestamp()) {
-				byte[] timePrefix = (System.currentTimeMillis() + TIME_STAMP_SEP_FLAG).getBytes();
-				toSend = new byte[timePrefix.length + tmp.length];
-				System.arraycopy(timePrefix, 0, toSend, 0, timePrefix.length);
-				System.arraycopy(tmp, 0, toSend, timePrefix.length , tmp.length);
+				toSend = TimestampUtil.appendTimestamp(tmp);
+//				byte[] timePrefix = (System.currentTimeMillis() + TIME_STAMP_SEP_FLAG).getBytes();
+//				toSend = new byte[timePrefix.length + tmp.length];
+//				System.arraycopy(timePrefix, 0, toSend, 0, timePrefix.length);
+//				System.arraycopy(tmp, 0, toSend, timePrefix.length , tmp.length);
 			} else {
 				toSend = new byte[tmp.length];
 				System.arraycopy(tmp, 0, toSend, 0 , tmp.length);

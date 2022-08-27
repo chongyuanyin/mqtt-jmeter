@@ -15,6 +15,7 @@ import net.xmeter.samplers.mqtt.ConnectionParameters;
 import net.xmeter.samplers.mqtt.MQTTClient;
 import net.xmeter.samplers.mqtt.MQTTClientException;
 import net.xmeter.samplers.mqtt.MQTTConnection;
+import net.xmeter.samplers.mqtt.MQTTUtil;
 
 class FuseMQTTClient implements MQTTClient {
     private static final Logger logger = Logger.getLogger(FuseMQTTClient.class.getCanonicalName());
@@ -29,7 +30,7 @@ class FuseMQTTClient implements MQTTClient {
         this.parameters = parameters;
 
         mqtt.setClientId(parameters.getClientId());
-        mqtt.setHost(createHostAddress(parameters));
+        mqtt.setHost(MQTTUtil.createHostAddress(parameters));
         mqtt.setCleanSession(parameters.isCleanSession());
         mqtt.setKeepAlive(parameters.getKeepAlive());
         mqtt.setUserName(parameters.getUsername());
@@ -52,10 +53,6 @@ class FuseMQTTClient implements MQTTClient {
         
         mqtt.getTracer().debug("send buffer size: " + mqtt.getSendBufferSize()/1024);
         mqtt.getTracer().debug("receive buffer size: " + mqtt.getReceiveBufferSize()/1024);
-    }
-
-    private String createHostAddress(ConnectionParameters parameters) {
-        return parameters.getProtocol().toLowerCase() + "://" + parameters.getHost() + ":" + parameters.getPort();
     }
 
     @Override

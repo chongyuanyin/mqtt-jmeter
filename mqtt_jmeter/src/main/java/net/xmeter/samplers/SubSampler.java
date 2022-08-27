@@ -17,6 +17,7 @@ import org.apache.jmeter.threads.JMeterVariables;
 import net.xmeter.SubBean;
 import net.xmeter.samplers.mqtt.MQTTConnection;
 import net.xmeter.samplers.mqtt.MQTTQoS;
+import net.xmeter.samplers.mqtt.MQTTSubListener;
 
 @SuppressWarnings("deprecation")
 public class SubSampler extends AbstractMQTTSampler {
@@ -32,7 +33,7 @@ public class SubSampler extends AbstractMQTTSampler {
 	private int sampleCount = 1;
 
 	private transient ConcurrentLinkedQueue<SubBean> batches = new ConcurrentLinkedQueue<>();
-	private boolean printFlag = false;
+//	private boolean printFlag = false;
 
 	private transient Object dataLock = new Object();
 
@@ -91,7 +92,15 @@ public class SubSampler extends AbstractMQTTSampler {
 	public void setDebugResponse(boolean debugResponse) {
 		setProperty(DEBUG_RESPONSE, debugResponse);
 	}
-
+	
+	public Object getDataLock() {
+		return this.dataLock;
+	}
+	
+	public ConcurrentLinkedQueue<SubBean> getBatches() {
+		return this.batches;
+	}
+	
 	@Override
 	public SampleResult sample(Entry arg0) {
 		SampleResult result = new SampleResult();
@@ -217,12 +226,12 @@ public class SubSampler extends AbstractMQTTSampler {
 			qos = QOS_0;
 		}
 		
-		final String[] paraTopics = topicsName.split(",");
 		if(qos < 0 || qos > 2) {
 			logger.severe("Specified invalid QoS value, set to default QoS value " + qos);
 			qos = QOS_0;
 		}
 
+		final String[] paraTopics = topicsName.split(",");
 		connection.subscribe(paraTopics, MQTTQoS.fromValue(qos), () -> {
 			logger.fine(() -> "sub successful, topic length is " + paraTopics.length);
 		}, error -> {
@@ -232,63 +241,65 @@ public class SubSampler extends AbstractMQTTSampler {
 	}
 	
 	private void setListener(final boolean sampleByTime, final int sampleCount) {
-		connection.setSubListener(((topic, message, ack) -> {
-			ack.run();
-
-			if(sampleByTime) {
-				synchronized (dataLock) {
-					handleSubBean(sampleByTime, message, sampleCount);
-				}
-			} else {
-				synchronized (dataLock) {
-					SubBean bean = handleSubBean(sampleByTime, message, sampleCount);
-					if(bean.getReceivedCount() == sampleCount) {
-						dataLock.notify();
-					}
-				}
-			}
-		}));
+		connection.setSubListener(new MQTTSubListener(sampleByTime, sampleCount, this));
+//		
+//		connection.setSubListener(((topic, message, ack) -> {
+//			ack.run();
+//
+//			if(sampleByTime) {
+//				synchronized (dataLock) {
+//					handleSubBean(sampleByTime, message, sampleCount);
+//				}
+//			} else {
+//				synchronized (dataLock) {
+//					SubBean bean = handleSubBean(sampleByTime, message, sampleCount);
+//					if(bean.getReceivedCount() == sampleCount) {
+//						dataLock.notify();
+//					}
+//				}
+//			}
+//		}));
 	}
 	
-	private SubBean handleSubBean(boolean sampleByTime, String msg, int sampleCount) {
-		SubBean bean = null;
-		if(batches.isEmpty()) {
-			bean = new SubBean();
-			batches.add(bean);
-		} else {
-			SubBean[] beans = new SubBean[batches.size()];
-			batches.toArray(beans);
-			bean = beans[beans.length - 1];
-		}
-		
-		if((!sampleByTime) && (bean.getReceivedCount() == sampleCount)) { //Create a new batch when latest bean is full.
-			logger.info("The tail bean is full, will create a new bean for it.");
-			bean = new SubBean();
-			batches.add(bean);
-		}
-		if (isAddTimestamp()) {
-			long now = System.currentTimeMillis();
-			int index = msg.indexOf(TIME_STAMP_SEP_FLAG);
-			if (index == -1 && (!printFlag)) {
-				logger.info(() -> "Payload does not include timestamp: " + msg);
-				printFlag = true;
-			} else if (index != -1) {
-				long start = Long.parseLong(msg.substring(0, index));
-				long elapsed = now - start;
-				
-				double avgElapsedTime = bean.getAvgElapsedTime();
-				int receivedCount = bean.getReceivedCount();
-				avgElapsedTime = (avgElapsedTime * receivedCount + elapsed) / (receivedCount + 1);
-				bean.setAvgElapsedTime(avgElapsedTime);
-			}
-		}
-		if (isDebugResponse()) {
-			bean.getContents().add(msg);
-		}
-		bean.setReceivedMessageSize(bean.getReceivedMessageSize() + msg.length());
-		bean.setReceivedCount(bean.getReceivedCount() + 1);
-		return bean;
-	}
+//	private SubBean handleSubBean(boolean sampleByTime, String msg, int sampleCount) {
+//		SubBean bean = null;
+//		if(batches.isEmpty()) {
+//			bean = new SubBean();
+//			batches.add(bean);
+//		} else {
+//			SubBean[] beans = new SubBean[batches.size()];
+//			batches.toArray(beans);
+//			bean = beans[beans.length - 1];
+//		}
+//		
+//		if((!sampleByTime) && (bean.getReceivedCount() == sampleCount)) { //Create a new batch when latest bean is full.
+//			logger.info("The tail bean is full, will create a new bean for it.");
+//			bean = new SubBean();
+//			batches.add(bean);
+//		}
+//		if (isAddTimestamp()) {
+//			long now = System.currentTimeMillis();
+//			int index = msg.indexOf(TIME_STAMP_SEP_FLAG);
+//			if (index == -1 && (!printFlag)) {
+//				logger.info(() -> "Payload does not include timestamp: " + msg);
+//				printFlag = true;
+//			} else if (index != -1) {
+//				long start = Long.parseLong(msg.substring(0, index));
+//				long elapsed = now - start;
+//				
+//				double avgElapsedTime = bean.getAvgElapsedTime();
+//				int receivedCount = bean.getReceivedCount();
+//				avgElapsedTime = (avgElapsedTime * receivedCount + elapsed) / (receivedCount + 1);
+//				bean.setAvgElapsedTime(avgElapsedTime);
+//			}
+//		}
+//		if (isDebugResponse()) {
+//			bean.getContents().add(msg);
+//		}
+//		bean.setReceivedMessageSize(bean.getReceivedMessageSize() + msg.length());
+//		bean.setReceivedCount(bean.getReceivedCount() + 1);
+//		return bean;
+//	}
 
 	private SampleResult fillFailedResult(SampleResult result, String code, String message) {
 		result.sampleStart();

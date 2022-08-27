@@ -15,7 +15,6 @@ import org.fusesource.mqtt.client.CallbackConnection;
 import org.fusesource.mqtt.client.Listener;
 import org.fusesource.mqtt.client.QoS;
 
-import net.xmeter.samplers.PubCallback;
 import net.xmeter.samplers.mqtt.MQTTConnection;
 import net.xmeter.samplers.mqtt.MQTTPubResult;
 import net.xmeter.samplers.mqtt.MQTTQoS;
@@ -66,7 +65,7 @@ class FuseMQTTConnection implements MQTTConnection {
     public MQTTPubResult publish(String topicName, byte[] message, MQTTQoS qos, boolean retained) {
         final Object pubLock = new Object();
         QoS fuseQos = FuseUtil.map(qos);
-        PubCallback pubCallback = new PubCallback(pubLock, fuseQos);
+        FusePubCallback pubCallback = new FusePubCallback(pubLock, fuseQos);
 
         try {
             if (qos == MQTTQoS.AT_MOST_ONCE) {

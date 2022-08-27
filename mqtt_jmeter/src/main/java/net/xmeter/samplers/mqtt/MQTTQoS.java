@@ -9,4 +9,8 @@ public enum MQTTQoS {
     public static MQTTQoS fromValue(int value) {
         return values()[value];
     }
+    
+    public int toValue() {
+    	return this.ordinal();
+    }
 }
