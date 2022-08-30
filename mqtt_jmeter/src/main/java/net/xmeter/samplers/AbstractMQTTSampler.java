@@ -3,6 +3,7 @@ package net.xmeter.samplers;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import org.apache.jmeter.samplers.AbstractSampler;
 
@@ -14,6 +15,9 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 	 */
 	private static final long serialVersionUID = 7163793218595455807L;
 	
+	private static final Logger logger = Logger.getLogger(AbstractMQTTSampler.class.getCanonicalName());
+
+	
 //	protected static final String LABEL_PREFIX = "xmeter-mqtt-batch-con-mode-";
 	
 //	protected boolean useEfficientCon = Boolean.parseBoolean(System.getProperty("batchCon"));
@@ -23,6 +27,15 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 	
 	//<connection client id, topics>
 	protected static Map<String, Set<String>> topicSubscribed = new ConcurrentHashMap<>();
+	
+//	private static final long nanoOffset;
+	private static final String samplingTimeGranularity;
+	
+	static {
+//		nanoOffset = Long.parseLong(System.getProperty("nanoTimeOffset", 
+//				String.valueOf(System.currentTimeMillis() * 1000 - System.nanoTime() / 1000)));
+		samplingTimeGranularity = System.getProperty("samplingTimeGranularity", "ms");
+	}
 
 	public String getServer() {
 		return getPropertyAsString(SERVER, DEFAULT_SERVER);
@@ -224,5 +237,13 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 //	public void setConCapacity(int conCapacity) {
 //		this.conCapacity = conCapacity;
 //	}
+//	
+//	public long getNanoTimeOffset() {
+//		logger.info("nanoTimeOffset=" + nanoOffset);
+//		return nanoOffset;
+//	}
 	
+	public String getTimeGranularity() {
+		return samplingTimeGranularity;
+	}
 }
