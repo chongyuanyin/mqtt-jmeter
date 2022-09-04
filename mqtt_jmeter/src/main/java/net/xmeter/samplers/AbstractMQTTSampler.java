@@ -35,6 +35,7 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 //		nanoOffset = Long.parseLong(System.getProperty("nanoTimeOffset", 
 //				String.valueOf(System.currentTimeMillis() * 1000 - System.nanoTime() / 1000)));
 		samplingTimeGranularity = System.getProperty("samplingTimeGranularity", "ms");
+		System.out.println("samplingTimeGranularity=" + samplingTimeGranularity);
 	}
 
 	public String getServer() {

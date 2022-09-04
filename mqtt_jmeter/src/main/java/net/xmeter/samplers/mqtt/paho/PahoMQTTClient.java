@@ -77,7 +77,7 @@ public class PahoMQTTClient implements MQTTClient {
 
 			@Override
 			public void connectComplete(boolean reconnect, String serverURI) {
-				// TODO Auto-generated method stub
+//				logger.info("connectComplete " + getClientId() + System.currentTimeMillis());
 			}
 
 			@Override
@@ -87,11 +87,11 @@ public class PahoMQTTClient implements MQTTClient {
 		};
 		mqttClient.setCallback(connCallbak);
 		
-		logger.info("Connecting to " + mqttClient.getServerURI());
+//		logger.info(getClientId() + ": Connecting to " + mqttClient.getServerURI() + " " + System.currentTimeMillis());
 		
 		mqttClient.connect(connOpts);
 		
-		logger.info("Connected");
+//		logger.info(getClientId() + ": Connected " + System.currentTimeMillis());
 		
 		// TODO Auto-generated method stub
 		return new PahoMQTTConnection(mqttClient.getClientId(), mqttClient, connCallbak);

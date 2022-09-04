@@ -36,6 +36,7 @@ public class PahoSubCallback implements MqttCallback {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		logger.fine("!!Msg arrived: id=" + message.getId() + ", payload=" + new String(message.getPayload()));
+		logger.info("!!user prop: " + message.getProperties().getUserProperties());
 		subListener.accept(topic, new String(message.getPayload(), "UTF-8"), message.getProperties().getUserProperties());
 	}
 

@@ -86,9 +86,9 @@ public class MQTTSubListener {
 			String msgInNanoTime = null;
 			String msgOutNanoTime = null;
 			for(UserProperty prop: userProps) {
-				if (prop.getKey().equals("message_in")) {
+				if (prop.getKey().equals("$message_in")) {
 					msgInNanoTime = prop.getValue();
-				} else if (prop.getKey().equals("message_out")) {
+				} else if (prop.getKey().equals("$message_out")) {
 					msgOutNanoTime = prop.getValue();
 				}
 				if (msgInNanoTime != null && msgOutNanoTime != null) {
@@ -103,7 +103,10 @@ public class MQTTSubListener {
 					elapsed = elapsedInNano / 1000000;
 				} else if (subSampler.getTimeGranularity().equalsIgnoreCase("us")) {
 					elapsed = elapsedInNano / 1000;
+				} else if (subSampler.getTimeGranularity().equalsIgnoreCase("ns")) {
+					elapsed = elapsedInNano;
 				}
+				logger.fine("!!latency=" + elapsed);
 				double avgElapsedTime = bean.getAvgElapsedTime();
 				int receivedCount = bean.getReceivedCount();
 				avgElapsedTime = (avgElapsedTime * receivedCount + elapsed) / (receivedCount + 1);

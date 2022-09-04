@@ -90,8 +90,10 @@ public class ConnectSampler extends AbstractMQTTSampler {
 			client = MQTT.getInstance(getMqttClientName()).createClient(parameters);
 
 			result.sampleStart();
+			logger.info(client.getClientId() + ": con start: " + result.getStartTime());
 			connection = client.connect();
 			result.sampleEnd();
+			logger.info(client.getClientId() + ": con end: " + result.getEndTime());
 
 			if (connection.isConnectionSucc()) {
 				vars.putObject("conn", connection); // save connection object as thread local variable !!
