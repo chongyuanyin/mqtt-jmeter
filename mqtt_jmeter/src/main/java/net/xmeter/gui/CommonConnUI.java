@@ -41,6 +41,8 @@ public class CommonConnUI implements ChangeListener, ActionListener, Constants{
 
 	private JLabeledChoice protocols;
 //	private JLabeledChoice clientNames;
+	private final JLabeledTextField sendBuff = new JLabeledTextField("Send Buffer Size:");
+	private final JLabeledTextField rcvBuff = new JLabeledTextField("Receive Buffer Size:");
 
 	private JCheckBox dualAuth = new JCheckBox("Dual SSL authentication");
 	private JLabeledTextField wsPath = new JLabeledTextField("WS Path: ", 10);
@@ -138,6 +140,8 @@ public class CommonConnUI implements ChangeListener, ActionListener, Constants{
 		//component.setSize(new Dimension(40, component.getHeight()));
 		protocols.addChangeListener(this);
 		pCenter.add(protocols);
+		pCenter.add(sendBuff);
+		pCenter.add(rcvBuff);
 
 		wsPath.setFont(null);
 		wsPath.setVisible(false);
@@ -277,6 +281,9 @@ public class CommonConnUI implements ChangeListener, ActionListener, Constants{
 		} else {
 			protocols.setText(sampler.getProtocol());
 		}
+		
+		sendBuff.setText(String.valueOf(sampler.getSendBuff()));
+		rcvBuff.setText(String.valueOf(sampler.getRecvBuff()));
 
 		boolean wsProtocol = Util.isWebSocketProtocol(sampler.getProtocol());
 		wsPath.setText(sampler.getWsPath());
@@ -324,6 +331,8 @@ public class CommonConnUI implements ChangeListener, ActionListener, Constants{
 //		sampler.setKeyStorePassword(tksPassword.getText());
 		sampler.setClientCertFilePath(ccFilePath.getText());
 		sampler.setClientCertPassword(ccPassword.getText());
+		sampler.setSendBuff(Integer.parseInt(sendBuff.getText()));
+		sampler.setRecvBuff(Integer.parseInt(rcvBuff.getText()));
 
 		sampler.setUserNameAuth(userNameAuth.getText());
 		sampler.setPasswordAuth(passwordAuth.getText());
@@ -354,6 +363,9 @@ public class CommonConnUI implements ChangeListener, ActionListener, Constants{
 //		clientNames.setSelectedIndex(clientNamesList.indexOf(DEFAULT_MQTT_CLIENT_NAME));
 		protocols.setValues(MQTT.getSupportedProtocols(DEFAULT_MQTT_CLIENT_NAME).toArray(new String[] {}));
 		protocols.setSelectedIndex(0);
+		
+		sendBuff.setText("64");
+		rcvBuff.setText("64");
 
 		dualAuth.setSelected(false);
 		wsPath.setText("");

@@ -8,6 +8,9 @@ public interface Constants {
 	public static final String MQTT_CLIENT_NAME = "mqtt.client_name";
 
 	public static final String PROTOCOL = "mqtt.protocol";
+	public static final String SEND_BUFF = "mqtt.send.buff";
+	public static final String RECV_BUFF = "mqtt.recv.buff";
+	
 	public static final String WS_PATH = "mqtt.ws_path";
 	public static final String DUAL_AUTH = "mqtt.dual_ssl_authentication";
 	public static final String CERT_FILE_PATH1 = "mqtt.keystore_file_path";

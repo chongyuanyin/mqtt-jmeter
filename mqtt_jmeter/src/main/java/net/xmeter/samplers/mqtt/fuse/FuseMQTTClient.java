@@ -40,6 +40,8 @@ class FuseMQTTClient implements MQTTClient {
         mqtt.setVersion(parameters.getVersion());
         mqtt.setConnectAttemptsMax(parameters.getConnectMaxAttempts());
         mqtt.setReconnectAttemptsMax(parameters.getReconnectMaxAttempts());
+        mqtt.setSendBufferSize(1024 * parameters.getSendBuff());
+        mqtt.setReceiveBufferSize(1024 * parameters.getRcvBuff());
 
         mqtt.setTracer(new Tracer() {
             @Override
@@ -52,6 +54,9 @@ class FuseMQTTClient implements MQTTClient {
             	
             }
         });
+        
+        mqtt.getTracer().debug("send buffer size: " + mqtt.getSendBufferSize()/1024);
+        mqtt.getTracer().debug("receive buffer size: " + mqtt.getReceiveBufferSize()/1024);
     }
 
     private String createHostAddress(ConnectionParameters parameters) {
