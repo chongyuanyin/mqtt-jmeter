@@ -43,8 +43,13 @@ class FuseMQTTClient implements MQTTClient {
 
         mqtt.setTracer(new Tracer() {
             @Override
-            public void debug(String message, Object...args) {
+            public void info(String message, Object...args) {
                 logger.info(() -> "MQTT Tracer - " + mqtt + "[" + parameters.getUsername() + "]: " + String.format(message, args));
+            }
+            
+            @Override
+            public void debug(String message, Object...args) {
+            	
             }
         });
     }

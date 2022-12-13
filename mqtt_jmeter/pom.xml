@@ -39,7 +39,7 @@
     </dependencies>
 
     <build>
-        <finalName>mqtt-xmeter-${project.version}</finalName>
+        <finalName>mqtt-xmeter-fuse-xmcloud-${project.version}</finalName>
         <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
