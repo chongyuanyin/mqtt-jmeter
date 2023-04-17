@@ -104,8 +104,8 @@ public class ConnectSampler extends AbstractMQTTSampler {
 			} else {
 				result.setSuccessful(false);
 				result.setResponseMessage(MessageFormat.format("Failed to establish Connection {0}.", connection));
-				result.setResponseData(MessageFormat.format("Client [{0}] failed. Couldn't establish connection.",
-						client.getClientId()).getBytes());
+				result.setResponseData(MessageFormat.format("Client [{0}] failed. Could not establish connection to {1}.",
+						client.getClientId(), getServer()).getBytes());
 				result.setResponseCode("501");
 			}
 		} catch (Exception e) {
