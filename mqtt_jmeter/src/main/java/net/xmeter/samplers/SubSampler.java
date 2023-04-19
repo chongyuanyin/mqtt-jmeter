@@ -91,6 +91,14 @@ public class SubSampler extends AbstractMQTTSampler {
 	public void setDebugResponse(boolean debugResponse) {
 		setProperty(DEBUG_RESPONSE, debugResponse);
 	}
+	
+	public boolean isIncludeTopic() {
+		return getPropertyAsBoolean(INCLUDE_TOPIC, false);
+	}
+
+	public void setIncludeTopic(boolean debugResponse) {
+		setProperty(INCLUDE_TOPIC, debugResponse);
+	}
 
 	@Override
 	public SampleResult sample(Entry arg0) {
@@ -188,7 +196,8 @@ public class SubSampler extends AbstractMQTTSampler {
 				content.append(contents.get(i) + "\n");
 			}
 		}
-		result = fillOKResult(result, bean.getReceivedMessageSize(), message, content.toString());
+		List<String> topics = bean.getTopics();
+		result = fillOKResult(result, bean.getReceivedMessageSize(), topics, message, content.toString());
 		if (logger.isLoggable(Level.FINE)) {
 			logger.fine("sub [topic]: " + topicName + ", [payload]: " + content.toString());
 		}
@@ -234,14 +243,14 @@ public class SubSampler extends AbstractMQTTSampler {
 	private void setListener(final boolean sampleByTime, final int sampleCount) {
 		connection.setSubListener(((topic, message, ack) -> {
 			ack.run();
-
+			logger.fine("sub topic is: " + topic);
 			if(sampleByTime) {
 				synchronized (dataLock) {
-					handleSubBean(sampleByTime, message, sampleCount);
+					handleSubBean(sampleByTime, topic, message, sampleCount);
 				}
 			} else {
 				synchronized (dataLock) {
-					SubBean bean = handleSubBean(sampleByTime, message, sampleCount);
+					SubBean bean = handleSubBean(sampleByTime, topic, message, sampleCount);
 					if(bean.getReceivedCount() == sampleCount) {
 						dataLock.notify();
 					}
@@ -250,7 +259,7 @@ public class SubSampler extends AbstractMQTTSampler {
 		}));
 	}
 	
-	private SubBean handleSubBean(boolean sampleByTime, String msg, int sampleCount) {
+	private SubBean handleSubBean(boolean sampleByTime, String topic, String msg, int sampleCount) {
 		SubBean bean = null;
 		if(batches.isEmpty()) {
 			bean = new SubBean();
@@ -262,7 +271,7 @@ public class SubSampler extends AbstractMQTTSampler {
 		}
 		
 		if((!sampleByTime) && (bean.getReceivedCount() == sampleCount)) { //Create a new batch when latest bean is full.
-			logger.info("The tail bean is full, will create a new bean for it.");
+			logger.fine("The tail bean is full, will create a new bean for it.");
 			bean = new SubBean();
 			batches.add(bean);
 		}
@@ -284,6 +293,9 @@ public class SubSampler extends AbstractMQTTSampler {
 		}
 		if (isDebugResponse()) {
 			bean.getContents().add(msg);
+		}
+		if (isIncludeTopic()) {
+			bean.getTopics().add(topic);
 		}
 		bean.setReceivedMessageSize(bean.getReceivedMessageSize() + msg.length());
 		bean.setReceivedCount(bean.getReceivedCount() + 1);
@@ -312,13 +324,20 @@ public class SubSampler extends AbstractMQTTSampler {
 		return result;
 	}
 
-	private SampleResult fillOKResult(SampleResult result, int size, String message, String contents) {
+	private SampleResult fillOKResult(SampleResult result, int size, List<String> topics, String message, String contents) {
 		result.setResponseCode("200");
 		result.setSuccessful(true);
 		result.setResponseMessage(message);
 		result.setBodySize(size);
 		result.setBytes(size);
 		result.setResponseData(contents.getBytes());
+		if (topics != null && !topics.isEmpty()) {
+			StringBuilder topicSb = new StringBuilder();
+			for (String topic: topics) {
+				topicSb.append(topic).append(",");
+			}
+			result.setResponseHeaders(topicSb.deleteCharAt(topicSb.length() - 1).toString());
+		}
 		result.sampleEnd();
 		return result;
 	}

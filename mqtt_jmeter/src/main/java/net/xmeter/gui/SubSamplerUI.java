@@ -29,8 +29,10 @@ public class SubSamplerUI extends AbstractSamplerGui implements Constants, Chang
 	private final JLabeledTextField sampleConditionValue = new JLabeledTextField("");
 	private final JLabeledTextField topicNames = new JLabeledTextField("Topic name(s):");
 	
-	private JCheckBox debugResponse = new JCheckBox("Debug response");
 	private JCheckBox timestamp = new JCheckBox("Payload includes timestamp");
+	private JCheckBox debugResponse = new JCheckBox("Debug response");
+	private JCheckBox includeTopic = new JCheckBox("Response header includes topic");
+	
 	
 	public SubSamplerUI() {
 		this.init();
@@ -71,6 +73,7 @@ public class SubSamplerUI extends AbstractSamplerGui implements Constants, Chang
 		
 		JPanel optsPanel2 = new HorizontalPanel();
 		optsPanel2.add(debugResponse);
+		optsPanel2.add(includeTopic);
 		optsPanelCon.add(optsPanel2);
 
 		return optsPanelCon;
@@ -102,6 +105,7 @@ public class SubSamplerUI extends AbstractSamplerGui implements Constants, Chang
 		this.topicNames.setText(sampler.getTopics());
 		this.timestamp.setSelected(sampler.isAddTimestamp());
 		this.debugResponse.setSelected(sampler.isDebugResponse());
+		this.includeTopic.setSelected(sampler.isIncludeTopic());
 		this.sampleOnCondition.setText(sampler.getSampleCondition());
 
 		if(SAMPLE_ON_CONDITION_OPTION1.equalsIgnoreCase(sampleOnCondition.getText())) {
@@ -145,6 +149,7 @@ public class SubSamplerUI extends AbstractSamplerGui implements Constants, Chang
 		
 		sampler.setAddTimestamp(this.timestamp.isSelected());
 		sampler.setDebugResponse(this.debugResponse.isSelected());
+		sampler.setIncludeTopic(this.includeTopic.isSelected());
 		sampler.setSampleCondition(this.sampleOnCondition.getText());
 		
 		if(SAMPLE_ON_CONDITION_OPTION1.equalsIgnoreCase(sampleOnCondition.getText())) {
@@ -161,6 +166,7 @@ public class SubSamplerUI extends AbstractSamplerGui implements Constants, Chang
 		this.qosChoice.setText(String.valueOf(QOS_0));
 		this.timestamp.setSelected(false);
 		this.debugResponse.setSelected(false);
+		this.includeTopic.setSelected(false);
 		this.sampleOnCondition.setText(SAMPLE_ON_CONDITION_OPTION1);
 		this.sampleConditionValue.setText(DEFAULT_SAMPLE_VALUE_ELAPSED_TIME_MILLI_SEC);
 	}
