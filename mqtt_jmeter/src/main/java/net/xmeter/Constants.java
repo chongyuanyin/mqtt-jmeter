@@ -42,6 +42,7 @@ public interface Constants {
 	public static final String TIME_STAMP_SEP_FLAG = "ts_sep_flag";
 	
 	public static final String DEBUG_RESPONSE = "mqtt.debug_response";
+	public static final String INCLUDE_TOPIC = "mqtt.include_topic";
 	
 	public static final int QOS_0 = 0;
 	public static final int QOS_1 = 1;
