@@ -19,7 +19,7 @@ public class DisConnectSampler extends AbstractMQTTSampler {
 
 	@Override
 	public SampleResult sample(Entry entry) {
-		SampleResult result = new SampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getName());
 		
 		JMeterVariables vars = JMeterContextService.getContext().getVariables();

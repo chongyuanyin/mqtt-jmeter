@@ -20,7 +20,7 @@ public class EfficientDisConnectSampler extends AbstractMQTTSampler {
 
 	@Override
 	public SampleResult sample(Entry entry) {
-		SampleResult result = new SampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getLabelPrefix() + getName());
 		result.setSuccessful(true);
 		
@@ -31,7 +31,7 @@ public class EfficientDisConnectSampler extends AbstractMQTTSampler {
 		if (connections == null) {
 			result.sampleStart();
 			for (int i=0; i<conCapacity; i++) {
-				SampleResult subResult = new SampleResult();
+				SampleResult subResult = new NanoSampleResult();
 				subResult.sampleStart();
 				subResult.setSampleLabel(getName() + "_" + i);
 				subResult.setSuccessful(false);
@@ -49,7 +49,7 @@ public class EfficientDisConnectSampler extends AbstractMQTTSampler {
 		int totalSampleCount = 0;
 		for (MQTTConnection connection : connections) {
 			String clientId = connection.getClientId();
-			SampleResult subResult = new SampleResult();
+			SampleResult subResult = new NanoSampleResult();
 			long cur = System.currentTimeMillis();
 			subResult.sampleStart();
 			subResult.setSampleLabel(getName());
@@ -77,7 +77,7 @@ public class EfficientDisConnectSampler extends AbstractMQTTSampler {
 		
 		int failedCon = conCapacity - connections.size();
 		for (int i=0; i<failedCon; i++) {
-			SampleResult subResult = new SampleResult();
+			SampleResult subResult = new NanoSampleResult();
 			subResult.sampleStart();
 			subResult.setSampleLabel(getName() + "_" + i);
 			subResult.setResponseMessage("Connection not found.");

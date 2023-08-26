@@ -15,6 +15,7 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
 
 import net.xmeter.SubBean;
+import net.xmeter.Util;
 import net.xmeter.samplers.mqtt.MQTTConnection;
 import net.xmeter.samplers.mqtt.MQTTQoS;
 
@@ -94,7 +95,7 @@ public class SubSampler extends AbstractMQTTSampler {
 
 	@Override
 	public SampleResult sample(Entry arg0) {
-		SampleResult result = new SampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getName());
 	
 		JMeterVariables vars = JMeterContextService.getContext().getVariables();
@@ -205,6 +206,9 @@ public class SubSampler extends AbstractMQTTSampler {
 		}
 		result.setSampleCount(receivedCount);
 
+//		System.out.println("=== sub startTime:" + result.getStartTime());
+//        System.out.println("=== sub endTime:" + result.getEndTime());
+//        System.out.println("=== sub elapsed:" + result.getTime());
 		return result;
 	}
 	
@@ -267,7 +271,7 @@ public class SubSampler extends AbstractMQTTSampler {
 			batches.add(bean);
 		}
 		if (isAddTimestamp()) {
-			long now = System.currentTimeMillis();
+			long now = Util.currentTimeInUs();
 			int index = msg.indexOf(TIME_STAMP_SEP_FLAG);
 			if (index == -1 && (!printFlag)) {
 				logger.info(() -> "Payload does not include timestamp: " + msg);
@@ -275,6 +279,7 @@ public class SubSampler extends AbstractMQTTSampler {
 			} else if (index != -1) {
 				long start = Long.parseLong(msg.substring(0, index));
 				long elapsed = now - start;
+				System.out.println("==sub elapsed: " + elapsed);
 				
 				double avgElapsedTime = bean.getAvgElapsedTime();
 				int receivedCount = bean.getReceivedCount();

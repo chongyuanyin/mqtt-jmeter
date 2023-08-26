@@ -34,7 +34,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 	@Override
 	public SampleResult sample(Entry entry) {
 		lock = new Object();
-		SampleResult result = new SampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getLabelPrefix() + getName());
 		result.setSuccessful(true);
 		
@@ -67,7 +67,7 @@ public class EfficientConnectSampler extends AbstractMQTTSampler {
 		result.sampleStart();
 		int totalSampleCount = 0;
 		for (int i=0; i<conCapacity; i++) {
-			SampleResult subResult = new SampleResult();
+			SampleResult subResult = new NanoSampleResult();
 			long cur = 0;
             String clientId;
             if(isClientIdSuffix()) {

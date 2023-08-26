@@ -88,7 +88,7 @@ public class PubSampler extends AbstractMQTTSampler {
 	
 	@Override
 	public SampleResult sample(Entry arg0) {
-		SampleResult result = new SampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getName());
 	
 		JMeterVariables vars = JMeterContextService.getContext().getVariables();
@@ -138,7 +138,7 @@ public class PubSampler extends AbstractMQTTSampler {
 			topicName = getTopic();
 			retainedMsg = getRetainedMessage();
 			if (isAddTimestamp()) {
-				byte[] timePrefix = (System.currentTimeMillis() + TIME_STAMP_SEP_FLAG).getBytes();
+				byte[] timePrefix = (Util.currentTimeInUs() + TIME_STAMP_SEP_FLAG).getBytes();
 				toSend = new byte[timePrefix.length + tmp.length];
 				System.arraycopy(timePrefix, 0, toSend, 0, timePrefix.length);
 				System.arraycopy(tmp, 0, toSend, timePrefix.length , tmp.length);
@@ -186,6 +186,9 @@ public class PubSampler extends AbstractMQTTSampler {
 						topicName, new String(toSend), connection));
 			}
 		}
+//		System.out.println("=== pub startTime:" + result.getStartTime());
+//        System.out.println("=== pub endTime:" + result.getEndTime());
+//        System.out.println("=== pub elapsed:" + result.getTime());
 		return result;
 	}
 	

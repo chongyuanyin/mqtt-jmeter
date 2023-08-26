@@ -3,9 +3,11 @@ package net.xmeter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -15,12 +17,15 @@ import javax.net.ssl.TrustManager;
 import org.apache.jmeter.services.FileServer;
 
 import net.xmeter.samplers.AbstractMQTTSampler;
+import net.xmeter.samplers.NanoSampleResult;
 
 public class Util implements Constants {
 	
 	private static SecureRandom random = new SecureRandom();
     private static char[] seeds = "abcdefghijklmnopqrstuvwxmy0123456789".toCharArray();
     private static final Logger logger = Logger.getLogger(Util.class.getCanonicalName());
+    
+    private static BigDecimal nanoOffset;
 
 	public static String generateClientId(String prefix) {
 		int leng = prefix.length();
@@ -107,5 +112,15 @@ public class Util implements Constants {
 
 	public static boolean isWebSocketProtocol(String protocol) {
 		return WS_PROTOCOL.equals(protocol) || WSS_PROTOCOL.equals(protocol);
+	}
+	
+	public static long currentTimeInUs() {
+		if (nanoOffset == null) {
+			long clockInMs = System.currentTimeMillis();
+            long nano = System.nanoTime();
+            nanoOffset = new BigDecimal(clockInMs).multiply(new BigDecimal(1000000)).subtract(new BigDecimal(nano));
+		}
+		BigDecimal current = new BigDecimal(System.nanoTime()).add(nanoOffset);
+		return current.divide(new BigDecimal(1000)).longValue();
 	}
 }

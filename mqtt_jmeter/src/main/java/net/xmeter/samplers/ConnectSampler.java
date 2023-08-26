@@ -26,7 +26,8 @@ public class ConnectSampler extends AbstractMQTTSampler {
 
 	@Override
 	public SampleResult sample(Entry entry) {
-		SampleResult result = new SampleResult();
+//		SampleResult nanoResult = new NanoSampleResult();
+		SampleResult result = new NanoSampleResult();
 		result.setSampleLabel(getName());
 		
 		JMeterVariables vars = JMeterContextService.getContext().getVariables();
@@ -94,7 +95,8 @@ public class ConnectSampler extends AbstractMQTTSampler {
 			connection = client.connect();
 			result.sampleEnd();
 			logger.info(MessageFormat.format("### sample end time for {0}: {1}", parameters.getClientId(), System.currentTimeMillis()));
-
+			logger.info(MessageFormat.format("### elapsed time for {0}: {1}", parameters.getClientId(), result.getTime()));
+			
 			if (connection.isConnectionSucc()) {
 				vars.putObject("conn", connection); // save connection object as thread local variable !!
 				vars.putObject("clientId", client.getClientId());	//save client id as thread local variable
@@ -118,7 +120,9 @@ public class ConnectSampler extends AbstractMQTTSampler {
 			result.setResponseData(MessageFormat.format("Client [{0}] failed with exception.", client.getClientId()).getBytes());
 			result.setResponseCode("502");
 		}
-		
+//		System.out.println("=== conn startTime:" + result.getStartTime());
+//        System.out.println("=== conn endTime:" + result.getEndTime());
+//        System.out.println("=== conn elapsed:" + result.getTime());
 		return result;
 	}
 

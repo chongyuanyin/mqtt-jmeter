@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.jmeter.samplers.AbstractSampler;
+import org.apache.jmeter.samplers.SampleResult;
 
 import net.xmeter.Constants;
 
@@ -223,6 +224,17 @@ public abstract class AbstractMQTTSampler extends AbstractSampler implements Con
 //
 //	public void setConCapacity(int conCapacity) {
 //		this.conCapacity = conCapacity;
+//	}
+	
+//	public void sampleStart(SampleResult result) {
+//		if (result.getStartTime() == 0) {
+//			result.setStartTime(currentTimeInMillis());
+//        } else {
+//            log.error("sampleStart called twice", new Throwable(INVALID_CALL_SEQUENCE_MSG));
+//        }
+//		
+//		result.sampleStart();
+//		
 //	}
 	
 }
